@@ -1,18 +1,23 @@
 let rs = require('readline-sync');
 
-let gameOver = false;
-let counter = 0;
+// var gameOver;
+// let counter = 0;
+
+const gameStatus = {
+  // counter: 0,
+  gameOver: false,
+};
 
 const rows = ['A', 'B', 'C'];
 const columns = [1, 2, 3];
 
 const grid = [];
 
+const pastPlayerStrikes = [];
+
 const fleet = [];
 
 let again;
-
-// const sunkShips = [];
 
 let playerStrike;
 
@@ -36,6 +41,7 @@ function Ship(name, location){
   this.name = name;
   this.location = location;
   this.length = 1;
+  this.hits = 0;
   this.sunk = false;
 };
 
@@ -67,87 +73,131 @@ const requestNextStrike = () => {
   playerStrike = rs.question('Enter a location to strike ie \'ie A2\'  ');
 }
 
+// error handling for player strike need to make sure row comes first then column
+// I'm debating just mapping through the grid to see if the playerStrike exists there...
+// const regex = /[A-C]/g;
+
+// const isStrikeValid = (strike) => {
+//   pastPlayerStrikes.push(strike)
+//   row = strike.slice(0, 1);
+//   col = strike.slice(1);
+//   if(row.match(regex) === regex){
+//     console.log('Valid Row');
+//   }
+//   console.log(row);
+//   console.log(col);
+//   console.log('check strike ',strike);
+// }
+
+// let's try it another way
+
+const strikeWithinGrid = (strike, grid) => {
+  row = strike.slice(0, 1);
+  col = strike.slice(1);
+  grid.forEach((cell) => {
+    console.log(cell.row);
+  })
+}
+
 const checkHit = (fleet) => {
   for(let i = 0; i < fleet.length; i++){
     if(playerStrike.toUpperCase() === fleet[i].location){
-      fleet[i].sunk = true;
-      counter++;
-       console.log('hit', counter);
+      fleet[i].hits++
+      console.log('hit ', fleet[i].hits);
     } else { console.log('miss');}
  }
 }
 
-const isGameOver = (counter, fleet) => {
-  if(counter === fleet.length){
-    gameOver = true;
-    console.log(`function ${gameOver}`);
-  }
+
+// Not producing desired outcome idk 
+
+const checkSink = (fleet) => {
+  fleet.forEach((ship) => {
+    if(ship.hits === ship.length){
+      ship.sunk = true;
+      console.log(`${ship.name} has been sunk`);
+    } else {console.log(`${ship.name} floats`);}
+  })
 }
 
-// const checkGameOver = (fleet) => {
-//   let isGameOver = false;
+// const checkGameStatus = (fleet) => {
+//   let counter = 0;
+//   fleet.forEach((ship) => {
+//     if(ship.sunk = true){
+//       counter ++
+//     } else{console.log(`${ship.name} still floats`);}
+//   })
 //   if(counter === fleet.length){
-//     fleet.forEach(element => {
-//       if (element.sunk = true){
-//         console.log(`${element} is sunk`);
-//       } if (element.sunk = false) {
-//         console.log(`${element} remains`);
-//         isGameOver = false;
-//       };
-//     });
-//   };
-//   console.log('end ');
-//   // gameOver = true;
-// };
+//     gameStatus.gameOver = true;
+//     console.log(`Game Over`);
+//   }
+// }
 
+function playBattleShip(){
+  startGame();
+  rs.question('Press any key to play Battleship   ');
+}
 
 const playerTurn = () => {
   requestNextStrike();
   checkHit(fleet);
+  checkSink(fleet);
 }
 
-function playBattleShip(){
-  gameOver = false;
-  startGame();
-  rs.question('Press any key to play Battleship   ');
-  while(!gameOver){
-    playerTurn();
-    isGameOver(counter, fleet);
-  }
-}
+
 
 console.log(fleet);
 
 playBattleShip();
 
-// rs.question('Press any key to play BattleShip   ');
 
-// startGame();
+startGame();
 
-//  while (!gameOver){
+playerTurn();
+
+strikeWithinGrid(playerStrike, grid);
+
+
+console.log(pastPlayerStrikes);
+// console.log(typeof(grid));
+
+
+
+//  while (!gameStatus.gameOver){
 
 //   playerTurn();
-//   // checkGameOver(fleet);
-//   // isGameOver(counter, fleet)
+//   // checkGameStatus();
 
-//   console.log(gameOver);
 
 //  }
 
-rs.keyInYN('You have destroyed all battleships. Would you like to play again?  ');
-again = rs.keyInYN()
- console.log(again);
+// rs.keyInYN('You have destroyed all battleships. Would you like to play again?  ');
 
- if(again = true){
-   gameOver = false;
-   console.log('Final log', gameOver);
- }
+// function playAgain(value) {
+//   if (value = true){
 
- if(again = true){
-   startGame()
- } else if(again = true){
-   console.log('Good day!');
- } else {
-   console.log('Please choose Y/N');
- }
+//   }
+// }
 
+
+// again = rs.keyInYN()
+//  console.log(again);
+
+//  if(again = true){
+//    gameOver = false;
+//    console.log('Final log', gameOver);
+//  }
+
+//  if(again = true){
+//    startGame()
+//  } else if(again = true){
+//    console.log('Good day!');
+//  } else {
+//    console.log('Please choose Y/N');
+//  }
+
+
+
+
+
+// console.log(gameStatus);
