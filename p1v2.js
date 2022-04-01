@@ -6,6 +6,9 @@ const columns = [1, 2, 3];
 
 const grid = [];
 
+const fleet = [];
+
+// const shipLocations = [];
 
 
 
@@ -19,6 +22,49 @@ const makeGrid = (row, col) => {
      });
 }
 
+function Ship(name, location){
+    this.name = name;
+    this.location = location;
+    this.length = 1;
+    this.hits = 0;
+    this.sunk = false;
+}
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+  };
+
+  const placeShip = () => {
+      let row = getRandomInt(rows.length);
+      let col = getRandomInt(columns.length);
+      return `${rows[row]}${columns[col]}`
+  }
+
+  const createFleet = () => {
+    fleet.push(new Ship('Patrol Boat', 'A1'));
+    fleet.push(new Ship('Submarine', 'A1'));
+  }
+
+function checkSameLocation(fleet){
+    fleet.map((ship) => {
+        console.log(ship.location);
+    })
+}
+
+
+
+
+
+
+
+
 makeGrid(rows, columns);
 
-console.log(grid);
+createFleet();
+
+checkSameLocation(fleet);
+
+
+
+// console.log(checkSameLocation(fleet));
+// console.log(fleet);
