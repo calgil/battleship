@@ -1,203 +1,153 @@
 let rs = require('readline-sync');
 
-// var gameOver;
-// let counter = 0;
-
-const gameStatus = {
-  // counter: 0,
-  gameOver: false,
-};
-
 const rows = ['A', 'B', 'C'];
+
 const columns = [1, 2, 3];
 
 const grid = [];
 
-const pastPlayerStrikes = [];
-
 const fleet = [];
 
-let again;
+const shipLocations = new Set();
 
-let playerStrike;
+const pastPlayerStrikes = [];
 
-function Cell(row, col) {
-  this.row = row;
-  this.col = Number( col);
-  this.name = `${row}${col}`
-};
+const sunkShips = new Set();
 
-const makeGrid = (rows, cols) => {
-    const cells = [];
-    rows.forEach((row) => {
-        for(let i = 0; i < cols.length; i++){
-        cells.push(new Cell(`${row}`,`${cols[i]}`))
-      };
+
+const makeGrid = (row, col) => {
+    row.forEach(cell => {
+        for(let i = 0; i<col.length; i++){
+            grid.push(`${cell}${col[i]}`);
+        }
     });
-    return grid.push(cells)
-};
+}
 
 function Ship(name, location){
-  this.name = name;
-  this.location = location;
-  this.length = 1;
-  this.hits = 0;
-  this.sunk = false;
-};
+    this.name = name;
+    this.location = location;
+    this.length = 1;
+    this.hits = 0;
+    this.sunk = false;
+}
 
 function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
+    return Math.floor(Math.random() * max);
+  };
+
+  const placeShip = () => {
+    let row = getRandomInt(rows.length);
+    let col = getRandomInt(columns.length);
+    return `${rows[row]}${columns[col]}`
+}
+
+const createFleet = () => {
+    fleet.push(new Ship('Patrol Boat', placeShip()));
+    fleet.push(new Ship('Submarine', placeShip()));
+  }
+
+const locationCheck = (fleet) =>{
+    for(let i = 1; i<fleet.length; i++){
+        if(fleet[i-1].location === fleet[i].location){
+            if(placeShip() != fleet[i-1].location){
+                fleet[i].location = placeShip();
+            }else{fleet[i].location = placeShip();}
+        };
+    };
 };
-
-const placeShip = () => {
-  let row = getRandomInt(rows.length)
-  let col = getRandomInt(columns.length)
-  return `${rows[row]}${columns[col]}`
-};
-
-fleet.push(new Ship('Patrol Boat', (placeShip(rows, columns))));
-fleet.push(new Ship('Submarine', (placeShip(rows, columns))));
-
-function checkSameLocation(fleet) {
-  while (fleet[0].location === fleet[1].location){
-    fleet[1].location = (placeShip(rows, columns));
-  }; 
-};
-
-function startGame(){
-makeGrid(rows, columns);
-checkSameLocation(fleet);
-}
-
-const requestNextStrike = () => {
-  playerStrike = rs.question('Enter a location to strike ie \'ie A2\'  ');
-}
-
-// error handling for player strike need to make sure row comes first then column
-// I'm debating just mapping through the grid to see if the playerStrike exists there...
-// const regex = /[A-C]/g;
-
-// const isStrikeValid = (strike) => {
-//   pastPlayerStrikes.push(strike)
-//   row = strike.slice(0, 1);
-//   col = strike.slice(1);
-//   if(row.match(regex) === regex){
-//     console.log('Valid Row');
-//   }
-//   console.log(row);
-//   console.log(col);
-//   console.log('check strike ',strike);
-// }
-
-// let's try it another way
-
-const strikeWithinGrid = (strike, grid) => {
-  row = strike.slice(0, 1);
-  col = strike.slice(1);
-  grid.forEach((cell) => {
-    console.log(cell.row);
-  })
-}
-
-const checkHit = (fleet) => {
-  for(let i = 0; i < fleet.length; i++){
-    if(playerStrike.toUpperCase() === fleet[i].location){
-      fleet[i].hits++
-      console.log('hit ', fleet[i].hits);
-    } else { console.log('miss');}
- }
-}
-
-
-// Not producing desired outcome idk 
-
-const checkSink = (fleet) => {
-  fleet.forEach((ship) => {
-    if(ship.hits === ship.length){
-      ship.sunk = true;
-      console.log(`${ship.name} has been sunk`);
-    } else {console.log(`${ship.name} floats`);}
-  })
-}
-
-// const checkGameStatus = (fleet) => {
-//   let counter = 0;
-//   fleet.forEach((ship) => {
-//     if(ship.sunk = true){
-//       counter ++
-//     } else{console.log(`${ship.name} still floats`);}
-//   })
-//   if(counter === fleet.length){
-//     gameStatus.gameOver = true;
-//     console.log(`Game Over`);
-//   }
-// }
 
 function playBattleShip(){
-  startGame();
+    createFleet();
+ //   If I run the function twice the ships don't have the same location
+//  Just once isn't good enough. not sure if I should repeat here or change the function somehow
+  locationCheck(fleet);
+  locationCheck(fleet);
   rs.question('Press any key to play Battleship   ');
 }
 
-const playerTurn = () => {
-  requestNextStrike();
-  checkHit(fleet);
-  checkSink(fleet);
+function requestNextStrike() {
+    playerStrike = rs.question('Enter a location to strike ie \'ie A2\'  ').toUpperCase();
+    errorHandleStrike(playerStrike, rows, columns);
+    if(pastPlayerStrikes.length < 1){
+        pastPlayerStrikes.push(playerStrike)
+        addHit(fleet, playerStrike);
+        reportHit(fleet, playerStrike);
+    } else{ checkSameStrikeLocation(pastPlayerStrikes, playerStrike) }
+    checkSink(fleet);
+  }
+
+const errorHandleStrike = (strike, row, col) => {
+    let strikeRow = strike.slice(0, 1);
+    let strikeCol = Number(strike.slice(1));
+    let valid = row.includes(strikeRow)
+    let validCol = col.includes(strikeCol);
+    if(!valid || !validCol){
+        console.log('Invalid strike please input location ie \'ie\'A2   ' );
+        requestNextStrike();
+    }  
 }
 
+const checkSameStrikeLocation = (pastStrikes, strike) => {
+    let repeat = pastStrikes.includes(strike);
+    if(repeat){
+        console.log('Already selected that location. Miss!  ');
+    } else {pastPlayerStrikes.push(strike)
+        addHit(fleet, playerStrike);
+        reportHit(fleet, playerStrike); }
+}
 
+const addHit = (fleet, strike) => {
+    fleet.forEach((ship) => {
+        if(ship.location === strike){
+            ship.hits++
+        }
+    })
+}
 
-console.log(fleet);
+const reportHit = (fleet, strike) => {
+    fleet.forEach((ship) => shipLocations.add(ship.location))
+    if(shipLocations.has(strike)){
+        console.log('Hit!');
+    } else{console.log('Miss');}
+} 
 
+const checkSink = (fleet) => {
+    for (let i = 0; i < fleet.length; i++){
+        if(fleet[i].hits === fleet[i].length){
+            sunkShips.add(fleet[i])
+            fleet[i].sunk = true;
+        }
+    }
+}
+
+const reset = () => {
+    fleet.length = 0;
+    shipLocations.clear();
+    pastPlayerStrikes.length = 0;
+    sunkShips.clear();
+}
+
+makeGrid(rows, columns);
 playBattleShip();
 
+while(sunkShips.size < fleet.length){
+    requestNextStrike(); 
+}
 
-startGame();
+if (sunkShips.size === fleet.length){
+    console.log('You have destroyed all ships');
+}
 
-playerTurn();
+let again = rs.keyInYN('Would you like to play again?   ')
 
-strikeWithinGrid(playerStrike, grid);
-
-
-console.log(pastPlayerStrikes);
-// console.log(typeof(grid));
-
-
-
-//  while (!gameStatus.gameOver){
-
-//   playerTurn();
-//   // checkGameStatus();
-
-
-//  }
-
-// rs.keyInYN('You have destroyed all battleships. Would you like to play again?  ');
-
-// function playAgain(value) {
-//   if (value = true){
-
-//   }
-// }
-
-
-// again = rs.keyInYN()
-//  console.log(again);
-
-//  if(again = true){
-//    gameOver = false;
-//    console.log('Final log', gameOver);
-//  }
-
-//  if(again = true){
-//    startGame()
-//  } else if(again = true){
-//    console.log('Good day!');
-//  } else {
-//    console.log('Please choose Y/N');
-//  }
-
-
-
-
-
-// console.log(gameStatus);
+while(again){
+    reset();
+    playBattleShip();
+    while(sunkShips.size < fleet.length){
+        requestNextStrike(); 
+    }
+    if (sunkShips.size === fleet.length){
+        console.log('You have destroyed all ships');
+    }
+    again = rs.keyInYN('Would you like to play again?   ')
+}
