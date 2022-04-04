@@ -14,7 +14,6 @@ const pastPlayerStrikes = [];
 
 const sunkShips = new Set();
 
-
 const makeGrid = (row, col) => {
     row.forEach(cell => {
         for(let i = 0; i<col.length; i++){
