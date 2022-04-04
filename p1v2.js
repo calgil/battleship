@@ -102,8 +102,9 @@ const errorHandleStrike = (strike, row, col) => {
     if(!valid || !validCol){
         console.log('Invalid strike please input location ie \'ie\'A2   ' );
         requestNextStrike();
-    } else{ pastPlayerStrikes.add(playerStrike)}
-    checkSameStrikeLocation(pastPlayerStrikes, playerStrike);
+    } 
+    // else{ pastPlayerStrikes.add(playerStrike)}
+    // checkSameStrikeLocation(pastPlayerStrikes, playerStrike);
 }
 
 const checkSameStrikeLocation = (pastStrikes, strike) => {
@@ -141,12 +142,12 @@ const checkSink = (fleet) => {
 playBattleShip();
 
 
-    fleet.forEach(ship => {
-        shipLocations.push(ship.location)
-    })
+    // fleet.forEach(ship => {
+    //     shipLocations.push(ship.location)
+    // })
 
 
-console.log(shipLocations);
+console.log(grid);
 
 // while(sunkShips.size < fleet.size){
 //     requestNextStrike();
