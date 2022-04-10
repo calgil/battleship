@@ -54,7 +54,7 @@ const createFleet = () => {
    }
 
 const findGridIndex = (location) => {
- gridIndex = grid.map(cell => cell.name).indexOf(location);
+ let gridIndex = grid.map(cell => cell.name).indexOf(location);
  return gridIndex;
    }
 
@@ -69,12 +69,21 @@ const uniqueStartLocations = () => {
     })
   };
 
-const updateGrid = () => {
-  fleet.forEach(ship => {
-      index = findGridIndex(...ship.location);
-    grid[index].hasShip = true;
-   });
- }
+  const shipAssignLocation = (fleet) => {
+    fleet.forEach(ship => {
+        placeShip(ship);
+    })
+}
+
+// This kinda works
+
+// const updateGrid = () => {
+//   fleet.map((ship) => {
+//       ship.cords.map(location => {
+//           grid[location].hasShip = true;
+//       })
+//   })
+//  }
  
 const randomOrientation = (start, length) => {
   return getRandomInt(2) === 1 ? 
@@ -82,12 +91,18 @@ const randomOrientation = (start, length) => {
  }
 
 
+//  Ahhhhhhh!!!!! This is where the problem is happening. Maybe I need to make a 
+// fukkin function that resets the ship and call that when shit is fucked
 
 const placeShip = (ship) => {
     gridIndex = findGridIndex(ship.location);
-    console.log(gridIndex);
-    // locationArr = randomOrientation(gridIndex, ship.length);
-    // ship.cords = locationArr
+    let shipCords = randomOrientation(gridIndex, ship.length);
+    if(shipCords === undefined){
+        ship.location = startLocation(grid)
+        placeShip(ship)
+    }
+    withinGrid(shipCords);
+    ship.cords = shipCords
 }
 
 const horizontal = (start, length) => {
@@ -96,8 +111,30 @@ const horizontal = (start, length) => {
         locationArray.push(start)
         start++
     }
-    return locationArray;
+    if(withinRow(locationArray)){
+        return locationArray
+    } else {locationArray.length = 0 };
+    
 }
+
+const findRow = (index) => {
+   let rowName = (grid[index].name).slice(0, 1);
+    return rowName
+}
+
+// const withinRow = (cords) => {
+//     let row = findRow(cords[0])
+//     let pass = false;
+//     cords.map(index => {
+//        if (row !== findRow(index)){
+//            console.log('false');
+//           pass = false;
+//        } 
+//        else { console.log('true');
+//            pass = true}
+//     })
+//     return pass
+// }
 
 const vertical = (start, length) => {
     let locationArray = [];
@@ -108,22 +145,31 @@ const vertical = (start, length) => {
     return locationArray;
 }
 
+
+
+
+// This needs work. I need to reset any ship that fucks the system
 const withinGrid = () => {
     fleet.map(ship => {
         for (const element of ship.cords){
-            if (element > 100){
+            if ((element > 100)){
                 ship.location = startLocation(grid)
                 ship.cords.length = 0;
                 placeShip(ship)
-                console.log(ship);
-            } else {console.log(`within grid`);}
+            } 
         }
     })
 }
 
-const resetShip = (ship) => {
-    ship.location = [startLocation(grid)];
-    randomOrientation();
+
+// This sucks
+
+const resetShip = () => {
+    fleet.forEach((ship) => {
+        if (ship.cords.length === undefined){
+            console.log('reset the fukkas');
+        }
+    })
 }
 
 
@@ -135,21 +181,24 @@ createFleet();
 
 uniqueStartLocations();
 
-// // updateGrid();
+shipAssignLocation(fleet);
+
+
+
 // // console.log(fleet);
 
 // // placeShip();
-// withinGrid();
 
 
-for (const ship of fleet){
-    placeShip(ship);
- }
 
-// randomOrientation();
 
-// console.log(findGridIndex('B2'));
+
+
+
+
+ withinGrid();
+
+//  updateGrid(); 
 
 console.log(fleet);
 // console.log(grid);
-// console.log(shipLocations);
