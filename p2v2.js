@@ -30,7 +30,7 @@ const dynamicGrid = (rowNum, colNum, rows, columns) => {
 function Ship(name, startLocation, length){
     this.name = name;
     this.location = startLocation;
-    this.cords = [];
+    this.coordinates = [];
     this.length = length;
     this.hits = 0;
     this.sunk = false;
@@ -69,41 +69,46 @@ const uniqueStartLocations = () => {
     })
   };
 
-  const shipAssignLocation = (fleet) => {
-    fleet.forEach(ship => {
-        placeShip(ship);
-    })
-}
+ 
 
 // This kinda works
 
 // const updateGrid = () => {
 //   fleet.map((ship) => {
-//       ship.cords.map(location => {
+//       ship.coordinates.map(location => {
 //           grid[location].hasShip = true;
 //       })
 //   })
 //  }
  
-const randomOrientation = (start, length) => {
-  return getRandomInt(2) === 1 ? 
-  vertical(start, length) : horizontal(start, length);
- }
+
 
 
 //  Ahhhhhhh!!!!! This is where the problem is happening. Maybe I need to make a 
 // fukkin function that resets the ship and call that when shit is fucked
 
+const shipAssignLocation = (fleet) => {
+    fleet.forEach(ship => {
+        placeShip(ship);
+    })
+}
 const placeShip = (ship) => {
     gridIndex = findGridIndex(ship.location);
-    let shipCords = randomOrientation(gridIndex, ship.length);
-    if(shipCords === undefined){
+    let shipCoordinates = randomOrientation(gridIndex, ship.length);
+    if(shipCoordinates.length === undefined){
         ship.location = startLocation(grid)
         placeShip(ship)
+        console.log('moved', ship);
     }
-    withinGrid(shipCords);
-    ship.cords = shipCords
+    withinGrid(shipCoordinates);
+    ship.coordinates = shipCoordinates
 }
+
+
+const randomOrientation = (start, length) => {
+    return getRandomInt(2) === 1 ? 
+    vertical(start, length) : horizontal(start, length);
+   }
 
 const horizontal = (start, length) => {
     let locationArray = [];
@@ -113,28 +118,34 @@ const horizontal = (start, length) => {
     }
     if(withinRow(locationArray)){
         return locationArray
-    } else {locationArray.length = 0 };
+    } else {
+        locationArray.length = 0;
+    };
     
+    return locationArray;
+}
+//  I keep getting an error when calling find row within this function
+// not sure if it is running twice or not tho
+
+const withinRow = (coordinates) => {
+    let row = findRow(coordinates[0])
+    console.log(row);
+    let pass = false;
+    coordinates.map(index => {
+       if (row !== findRow(index)){
+           console.log('false');
+          pass = false;
+       } 
+       else { console.log('true');
+           pass = true}
+    })
+    return pass
 }
 
 const findRow = (index) => {
-   let rowName = (grid[index].name).slice(0, 1);
-    return rowName
-}
-
-// const withinRow = (cords) => {
-//     let row = findRow(cords[0])
-//     let pass = false;
-//     cords.map(index => {
-//        if (row !== findRow(index)){
-//            console.log('false');
-//           pass = false;
-//        } 
-//        else { console.log('true');
-//            pass = true}
-//     })
-//     return pass
-// }
+    let rowName = (grid[index].name).slice(0, 1);
+     return rowName
+ }
 
 const vertical = (start, length) => {
     let locationArray = [];
@@ -151,10 +162,10 @@ const vertical = (start, length) => {
 // This needs work. I need to reset any ship that fucks the system
 const withinGrid = () => {
     fleet.map(ship => {
-        for (const element of ship.cords){
+        for (const element of ship.coordinates){
             if ((element > 100)){
                 ship.location = startLocation(grid)
-                ship.cords.length = 0;
+                ship.coordinates.length = 0;
                 placeShip(ship)
             } 
         }
@@ -166,7 +177,7 @@ const withinGrid = () => {
 
 const resetShip = () => {
     fleet.forEach((ship) => {
-        if (ship.cords.length === undefined){
+        if (ship.coordinates.length === undefined){
             console.log('reset the fukkas');
         }
     })
