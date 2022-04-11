@@ -63,7 +63,9 @@ const horizontal = (start, length) => {
         start ++;
     }
     withinGrid(locationArray);
-    withinRow(locationArray);
+    if(withinRow(locationArray)){
+        return locationArray
+    } else {locationArray.length = 0}
     return locationArray;
 }
 
@@ -85,6 +87,8 @@ const withinRow = (coordinates) => {
     })
 }
 
+
+// if coordinates is empty this result is undefined
 const findRow = (index) => {
     let rowName = (grid[index].name).slice(0, 1);
      return rowName
@@ -98,14 +102,17 @@ for(const ship of fleet){
     if(ship.coordinates.length === 0){
         getRandomInt(2) === 1 ?
         coordinates = vertical(startIndex, length) : coordinates = horizontal(startIndex, length);
+        if(coordinates.length === 0){
+            getRandomInt(2) === 1 ?
+            coordinates = vertical(startIndex, length) : coordinates = horizontal(startIndex, length);
+        }
     }
-    console.log(coordinates.length);
     ship.coordinates = coordinates
 
 
     console.log('name', name, ship);
-    console.log('start',startIndex);
-    console.log('coords',coordinates);
+    // console.log('start',startIndex);
+    // console.log('coords',coordinates);
 }
 
 // console.log(fleet);
