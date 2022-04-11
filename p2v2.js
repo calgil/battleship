@@ -36,13 +36,11 @@ function Ship(name, startLocation, length){
     this.sunk = false;
   }
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-  };
+const getRandomInt = (max) =>  { Math.floor(Math.random() * max) };
 
 const startLocation = (grid) => { 
     let random = getRandomInt(grid.length);
-     return grid[random].name;
+     return grid[random];
   };
 
 const createFleet = () => {
@@ -67,43 +65,25 @@ const uniqueStartLocations = () => {
          ship.location = startLocation(grid)
      } shipLocations.push(location)
     })
-  };
-
- 
-
-// This kinda works
-
-// const updateGrid = () => {
-//   fleet.map((ship) => {
-//       ship.coordinates.map(location => {
-//           grid[location].hasShip = true;
-//       })
-//   })
-//  }
- 
-
-
-
-//  Ahhhhhhh!!!!! This is where the problem is happening. Maybe I need to make a 
-// fukkin function that resets the ship and call that when shit is fucked
+  }
 
 const shipAssignLocation = (fleet) => {
     fleet.forEach(ship => {
         placeShip(ship);
     })
 }
-const placeShip = (ship) => {
-    gridIndex = findGridIndex(ship.location);
-    let shipCoordinates = randomOrientation(gridIndex, ship.length);
-    if(shipCoordinates.length === undefined){
-        ship.location = startLocation(grid)
-        placeShip(ship)
-        console.log('moved', ship);
-    }
-    withinGrid(shipCoordinates);
-    ship.coordinates = shipCoordinates
-}
 
+const placeShip = (object) => {
+    if(object.coordinates.length === 0){
+        gridIndex = findGridIndex(object.location);
+        let shipCoordinates = randomOrientation(gridIndex, object.length);
+        withinGrid(object);
+        object.coordinates = shipCoordinates
+    }
+    withinGrid(object)
+    updateGrid(object);
+    checkOverlap(object);
+}
 
 const randomOrientation = (start, length) => {
     return getRandomInt(2) === 1 ? 
@@ -120,24 +100,19 @@ const horizontal = (start, length) => {
         return locationArray
     } else {
         locationArray.length = 0;
+        locationArray.push(reverseRow(start, length))
     };
-    
-    return locationArray;
-}
-//  I keep getting an error when calling find row within this function
-// not sure if it is running twice or not tho
+    return locationArray.flat();
+};
 
 const withinRow = (coordinates) => {
     let row = findRow(coordinates[0])
-    console.log(row);
     let pass = false;
     coordinates.map(index => {
        if (row !== findRow(index)){
-           console.log('false');
           pass = false;
        } 
-       else { console.log('true');
-           pass = true}
+       else { pass = true}
     })
     return pass
 }
@@ -147,44 +122,64 @@ const findRow = (index) => {
      return rowName
  }
 
+const reverseRow = (start, length) => {
+    let rowArray = [];
+    while(rowArray.length < length){
+        rowArray.push(start);
+        start--
+     }
+     return rowArray;
+ }
+
 const vertical = (start, length) => {
     let locationArray = [];
     while(locationArray.length < length) {
+        // if(start > 99){
+        //     console.log('vertical ruined it');
+        //     locationArray.length = 0;
+        // }
         locationArray.push(start)
         start += 10;
     }
     return locationArray;
 }
 
-
-
-
-// This needs work. I need to reset any ship that fucks the system
-const withinGrid = () => {
-    fleet.map(ship => {
-        for (const element of ship.coordinates){
-            if ((element > 100)){
+const withinGrid = (ship) => {
+    ship.coordinates.map(index => {
+            if ((index > 99)){
                 ship.location = startLocation(grid)
-                ship.coordinates.length = 0;
+                console.log('here', ship.coordinates);
+                resetShip(ship);
+                // ship.coordinates.length = 0;
+                console.log('after', ship.coordinates);
                 placeShip(ship)
             } 
-        }
     })
 }
 
+const updateGrid = (ship) => {
+    console.log('super dumb', ship);
+        ship.coordinates.map(location => {
+            console.log('dumb', grid[location].hasShip);
+            grid[location].hasShip = true;
+            console.log('dumb too', grid[location].hasShip);
+        })
+   }
 
-// This sucks
-
-const resetShip = () => {
-    fleet.forEach((ship) => {
-        if (ship.coordinates.length === undefined){
-            console.log('reset the fukkas');
-        }
+const checkOverlap = (ship) => {
+    ship.coordinates.map(cell => {
+        if (grid[cell].hasShip){
+            resetShip(ship);
+            placeShip(ship);
+        } 
     })
 }
 
-
-
+const resetShip = (ship) => {
+    ship.location = startLocation(grid);
+    ship.coordinates.length = [];
+    placeShip(ship);
+}
 
 dynamicGrid(10, 10, rows, columns);
 
@@ -194,7 +189,11 @@ uniqueStartLocations();
 
 shipAssignLocation(fleet);
 
+// withinGrid();
 
+// updateGrid();
+
+// uniqueStartLocations();
 
 // // console.log(fleet);
 
@@ -207,9 +206,9 @@ shipAssignLocation(fleet);
 
 
 
- withinGrid();
+
 
 //  updateGrid(); 
 
 console.log(fleet);
-// console.log(grid);
+console.log(grid);
