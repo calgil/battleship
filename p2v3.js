@@ -27,9 +27,9 @@ const dynamicGrid = (rowNum, colNum, rows, columns) => {
       })
     }
 
-function Ship(name, startLocation, length){
+function Ship(name, length){
     this.name = name;
-    this.startIndex = startLocation;
+    this.startIndex;
     this.coordinates = [];
     this.length = length;
     this.hits = 0;
@@ -39,82 +39,95 @@ function Ship(name, startLocation, length){
 const getRandomInt = (max) =>  { return Math.floor(Math.random() * max) };
 
 const createFleet = () => {
-  fleet.push(new Ship('Patrol Boat', getRandomInt(99), 2));
-  fleet.push(new Ship('Submarine', getRandomInt(99), 3));
-  fleet.push(new Ship('Destroyer', getRandomInt(99), 3));
-  fleet.push(new Ship('Battleship', getRandomInt(99), 4));
-  fleet.push(new Ship('Carrier', getRandomInt(99), 5));
+  fleet.push(new Ship('Patrol Boat', 2));
+  fleet.push(new Ship('Submarine', 3));
+  fleet.push(new Ship('Destroyer', 3));
+  fleet.push(new Ship('Battleship', 4));
+  fleet.push(new Ship('Carrier', 5));
  }
 
-const vertical = (start, length) => {
-    let locationArray = [];
-    while(locationArray.length < length){
-        locationArray.push(start);
-        start += 10;
-    }
-    withinGrid(locationArray);
-    return locationArray;
-}
-
-const horizontal = (start, length) => {
-    let locationArray = [];
-    while(locationArray.length < length){
-        locationArray.push(start);
-        start ++;
-    }
-    withinGrid(locationArray);
-    if(withinRow(locationArray)){
-        return locationArray
-    } else {locationArray.length = 0}
-    return locationArray;
-}
-
-const withinGrid = (arr) => {
-    arr.map(coordinate => {
-        if (coordinate > 99){
-            arr.length = 0;
+const vertical = length => {
+    let placed = false;
+    let locationArray;
+    while(!placed){
+        locationArray = [];
+        let start = getRandomInt(99);
+        while(locationArray.length < length){
+            locationArray.push(start);
+            start += 10;
         }
-    })
+        if(locationArray.every(withinGrid)) placed = true;
+    }
+    return locationArray;
 }
 
-const withinRow = (coordinates) => {
-    let row = findRow(coordinates[0])
+const horizontal = length => {
+    let placed = false;
+    let locationArray;
+    while(!placed) {
+        let start = getRandomInt(99);
+        locationArray = [];
+        while(locationArray.length < length){
+            locationArray.push(start);
+            start ++;
+        }
+        if((locationArray.every(withinGrid)) && withinRow(locationArray)) { placed = true } ;
+    }
+    return locationArray
+}
+
+const withinGrid = element => element < 99;
+
+const withinRow = (array) => {
+    let row = findRow(array[0]);
     let pass = false;
-    coordinates.map(index => {
-        if(row !== findRow(index)){
+    array.map(index => {
+        if (row !== findRow(index)){
             pass = false;
-        } else {pass = true;}
+        } else { pass = true;}
     })
+    return row, pass
 }
 
-
-// if coordinates is empty this result is undefined
 const findRow = (index) => {
     let rowName = (grid[index].name).slice(0, 1);
      return rowName
  }
 
+const checkOverlap = array => {
+    let placed;
+    array.forEach(element => {
+        if(!(grid[element].hasShip)){
+            grid[element].hasShip = true;
+            placed = true;
+        }else if(grid[element].hasShip = true){
+            placed = false;
+        }
+    })
+    return placed;
+ }
+
+const genCods = ship => {
+   let { name, coordinates, length} = ship;
+   getRandomInt(2) === 1 
+       ? (coordinates = vertical( length ))
+       : (coordinates = horizontal( length ));
+   if(!checkOverlap(coordinates)){ genCods(ship) };
+   
+   ship.coordinates = coordinates;
+}
+
 dynamicGrid(10, 10, rows, columns);
 createFleet();
 
-for(const ship of fleet){
-    let { name, startIndex, coordinates, length} = ship
-    if(ship.coordinates.length === 0){
-        getRandomInt(2) === 1 ?
-        coordinates = vertical(startIndex, length) : coordinates = horizontal(startIndex, length);
-        if(coordinates.length === 0){
-            getRandomInt(2) === 1 ?
-            coordinates = vertical(startIndex, length) : coordinates = horizontal(startIndex, length);
-        }
-    }
-    ship.coordinates = coordinates
-
-
-    console.log('name', name, ship);
-    // console.log('start',startIndex);
-    // console.log('coords',coordinates);
+for(const ship of fleet) {
+    genCods(ship);
 }
 
-// console.log(fleet);
-// console.log(grid[102]);
+
+
+
+
+console.log(fleet);
+// console.log(grid);
 // console.table(grid);
