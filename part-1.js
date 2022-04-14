@@ -57,11 +57,9 @@ const locationCheck = (fleet) =>{
 
 function playBattleShip(){
     createFleet();
- //   If I run the function twice the ships don't have the same location
-//  Just once isn't good enough. not sure if I should repeat here or change the function somehow
-  locationCheck(fleet);
-  locationCheck(fleet);
-  rs.question('Press any key to play Battleship   ');
+    locationCheck(fleet);
+    locationCheck(fleet);
+    // rs.question('Press any key to play Battleship   ');
 }
 
 function requestNextStrike() {
@@ -81,7 +79,7 @@ const errorHandleStrike = (strike, row, col) => {
     let valid = row.includes(strikeRow)
     let validCol = col.includes(strikeCol);
     if(!valid || !validCol){
-        console.log('Invalid strike please input location ie \'ie\'A2   ' );
+        console.log('Invalid strike. Please input valid location \'ie\'A2   ' );
         requestNextStrike();
     }  
 }
@@ -127,26 +125,29 @@ const reset = () => {
 }
 
 makeGrid(rows, columns);
-playBattleShip();
 
-while(sunkShips.size < fleet.length){
-    requestNextStrike(); 
-}
+console.log(grid);
 
-if (sunkShips.size === fleet.length){
-    console.log('You have destroyed all ships');
-}
+// playBattleShip();
 
-let again = rs.keyInYN('Would you like to play again?   ')
+// while(sunkShips.size < fleet.length){
+//     requestNextStrike(); 
+// }
 
-while(again){
-    reset();
-    playBattleShip();
-    while(sunkShips.size < fleet.length){
-        requestNextStrike(); 
-    }
-    if (sunkShips.size === fleet.length){
-        console.log('You have destroyed all ships');
-    }
-    again = rs.keyInYN('Would you like to play again?   ')
-}
+// if (sunkShips.size === fleet.length){
+//     console.log('You have destroyed all ships');
+// }
+
+// let again = rs.keyInYN('Would you like to play again?   ')
+
+// while(again){
+//     reset();
+//     playBattleShip();
+//     while(sunkShips.size < fleet.length){
+//         requestNextStrike(); 
+//     }
+//     if (sunkShips.size === fleet.length){
+//         console.log('You have destroyed all ships');
+//     }
+//     again = rs.keyInYN('Would you like to play again?   ')
+// }
