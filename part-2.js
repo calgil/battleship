@@ -2,7 +2,7 @@ let rs = require('readline-sync');
 
 const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
-const columns = [1, 2, 3, 4, 5, 6, 7, 8, 9 , 10];
+// const columns = [1, 2, 3, 4, 5, 6, 7, 8, 9 , 10];
 
 const grid = [];
 
@@ -17,12 +17,11 @@ function Cell(name) {
     this.miss = false;
   }
 
-const dynamicGrid = (rowNum, colNum, rows, columns) => {
-  let row = rows.slice(0, rowNum);
-  let col = columns.slice(0, colNum);
+const dynamicGrid = (dimension, rows) => {
+  let row = rows.slice(0, dimension);
   row.forEach(cell => {
-      for(let i = 0; i < col.length; i++){
-          grid.push(new Cell(`${cell}${col[i]}`));
+      for(let i = 1; i <= row.length; i++){
+          grid.push(new Cell(`${cell}${i}`));
           }
       })
     }
@@ -163,11 +162,9 @@ const findGridIndex = locationName => {
 };
 
 const playBattleShip = () => {
-    dynamicGrid(10, 10, rows, columns);
+    dynamicGrid( 10, rows);
     createFleet();
-    for(const ship of fleet) {
-        genCods(ship);
-    }
+    for(const ship of fleet) { genCods(ship) };
     rs.question('Press any key to play battleship  ');
 }
 
@@ -189,12 +186,22 @@ const reset = () => {
 
 playBattleShip();
 
-gamePlay()
+// for(let i = 0; i< grid.length; i++){
+//     console.table(grid[i].name);
+// };
 
-let again = rs.keyInYNStrict('You have destroyed all ships would you like to play again?    ')
+console.table([
+    
+]);
 
-while(again){
-    reset();
-    playBattleShip();
-    gamePlay();
-}
+// console.table(grid.name, 10);
+
+// gamePlay()
+
+// let again = rs.keyInYNStrict('You have destroyed all ships would you like to play again?    ')
+
+// while(again){
+//     reset();
+//     playBattleShip();
+//     gamePlay();
+// }
