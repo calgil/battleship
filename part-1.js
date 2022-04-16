@@ -128,26 +128,28 @@ makeGrid(rows, columns);
 
 console.log(grid);
 
-// playBattleShip();
+playBattleShip();
 
-// while(sunkShips.size < fleet.length){
-//     requestNextStrike(); 
-// }
+while(sunkShips.size < fleet.length){
+    requestNextStrike(); 
+}
 
-// if (sunkShips.size === fleet.length){
-//     console.log('You have destroyed all ships');
-// }
+if (sunkShips.size === fleet.length){
+    console.log('You have destroyed all ships');
+}
 
-// let again = rs.keyInYN('Would you like to play again?   ')
+let again = rs.keyInYN('Would you like to play again?   ')
 
-// while(again){
-//     reset();
-//     playBattleShip();
-//     while(sunkShips.size < fleet.length){
-//         requestNextStrike(); 
-//     }
-//     if (sunkShips.size === fleet.length){
-//         console.log('You have destroyed all ships');
-//     }
-//     again = rs.keyInYN('Would you like to play again?   ')
-// }
+while(again){
+    reset();
+    playBattleShip();
+    while(sunkShips.size < fleet.length){
+        requestNextStrike(); 
+    }
+    if (sunkShips.size === fleet.length){
+        console.log('You have destroyed all ships');
+    }
+    again = rs.keyInYN('Would you like to play again?   ')
+}
+
+console.log('Thanks for playing!    ');
