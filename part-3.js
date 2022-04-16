@@ -10,14 +10,12 @@ const sunkShips = new Set();
 
 let displayGrid = [];
 
-
 function Cell(name) {
     this.name = name;
     this.hasShip = false;
     this.hit = false;
     this.miss = false;
   }
-
 
 const dynamicGrid = (dimension, rows) => {
     let row = rows.slice(0, dimension);
@@ -31,7 +29,6 @@ const dynamicGrid = (dimension, rows) => {
         })
       }
 
-
 const makeDisplayGrid = (rows) => {
     rows.forEach(row =>{
         row = [];
@@ -41,7 +38,6 @@ const makeDisplayGrid = (rows) => {
         console.log(row);
     })
 }
-
 
 function Ship(name, length){
   this.name = name;
