@@ -29,16 +29,6 @@ const dynamicGrid = (dimension, rows) => {
         })
       }
 
-const makeDisplayGrid = (rows) => {
-    rows.forEach(row =>{
-        row = [];
-        for(let i = 0; i < rows.length; i++){
-            row.push(new Cell(`${row}${i}`))
-        }
-        console.log(row);
-    })
-}
-
 function Ship(name, length){
   this.name = name;
   this.startIndex;
@@ -212,6 +202,7 @@ const updateDisplayGrid = (row, col, strike) => {
 
 const reset = () => {
     fleet.length = 0;
+    displayGrid.length = 0;
     sunkShips.clear();
 }
 
