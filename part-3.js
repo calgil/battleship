@@ -18,7 +18,7 @@ function Cell(name) {
   }
 
 const dynamicGrid = (dimension, rows) => {
-    let row = rows.slice(0, (dimension - 1));
+    let row = rows.slice(0, dimension);
     row.forEach(cell => {
         let rowArr = [];
         for(let i = 1; i <= row.length; i++){
