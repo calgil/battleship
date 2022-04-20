@@ -18,14 +18,14 @@ function Cell(name) {
   }
 
 const dynamicGrid = (dimension, rows) => {
-    let row = rows.slice(0, dimension);
+    let row = rows.slice(0, (dimension - 1));
     row.forEach(cell => {
         let rowArr = [];
         for(let i = 1; i <= row.length; i++){
             grid.push(new Cell(`${cell}${i}`));
             rowArr.push(`${cell}${i}`);
             }
-            displayGrid.push(rowArr)
+            displayGrid.push(rowArr);
         })
       }
 
