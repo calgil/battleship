@@ -41,11 +41,11 @@ function Ship(name, length){
  const getRandomInt = (max) =>  { return Math.floor(Math.random() * max) };
  
  const createFleet = () => {
-   fleet.push(new Ship('Patrol Boat', 2));
-   fleet.push(new Ship('Submarine', 3));
-   fleet.push(new Ship('Destroyer', 3));
-   fleet.push(new Ship('Battleship', 4));
-   fleet.push(new Ship('Carrier', 5));
+    fleet.push(new Ship('Patrol Boat', 2));
+    fleet.push(new Ship('Submarine', 3));
+    fleet.push(new Ship('Destroyer', 3));
+    fleet.push(new Ship('Battleship', 4));
+    fleet.push(new Ship('Carrier', 5));
   }
     
 const vertical = length => {
@@ -63,7 +63,7 @@ const vertical = length => {
     return locationArray;
 }
     
-const horizontal = length => {
+const horizontal = (length) => {
     let placed = false;
     let locationArray;
     while(!placed) {
@@ -84,9 +84,7 @@ const withinRow = (array) => {
     let row = findRow(array[0]);
     let pass = false;
     array.map(index => {
-        if (row !== findRow(index)){
-            pass = false;
-        } else { pass = true;}
+        pass = (row !== findRow(index)) ? false : true;
     })
     return row, pass
 }
@@ -169,18 +167,21 @@ const findGridIndex = locationName => {
 const playBattleShip = () => {
     dynamicGrid( 10, rows);
     createFleet();
-    for(const ship of fleet) { genCods(ship) };
+    for(const ship of fleet) { 
+        genCods(ship) };
     rs.question('Press any key to play battleship  ');
 }
 
 const gamePlay = () => {
     while(sunkShips.size < fleet.length){
         requestPlayerStrike();
-        if((fleet.length - sunkShips.size) > 0){
-            (fleet.length - sunkShips.size) > 1
-            ? console.log(`There are ${fleet.length - sunkShips.size} ships remaining`)
-            : console.log(`There is ${fleet.length - sunkShips.size} ship remaining`);
-        }
+        let changes = {connector: 'is', ending: ''};
+        let areSunkShips;
+        sunkShips.size > 0 ? areSunkShips = true : areSunkShips = false;
+        (fleet.length - sunkShips.size) > 1 ? (changes = {connector: 'are', ending: 's'}) : false;
+            areSunkShips
+                ? console.log(`There ${changes.connector} ${fleet.length - sunkShips.size} ship${changes.ending} remaining`)
+                : null;
     }
 }
 
@@ -193,11 +194,8 @@ const updateDisplayGrid = (row, col, strike) => {
     gridIndex = findGridIndex(strike);
     rowIndex = rows.map(unit => unit).indexOf(row)
     colIndex = (col - 1);
-    if(grid[gridIndex].hasShip){
-        displayGrid[rowIndex][colIndex] = 'X';
-    } else if(!grid[gridIndex].hasShip) {
-        displayGrid[rowIndex][colIndex] = 'O';
-    }
+    const displayValue = grid[gridIndex].hasShip ? 'X' : 'O';
+    displayGrid[rowIndex][colIndex] = displayValue;
 }
 
 const reset = () => {
