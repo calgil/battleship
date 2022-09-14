@@ -129,6 +129,7 @@ makeGrid(rows, columns);
 console.log(grid);
 
 playBattleShip();
+console.log('grid',grid);
 
 while(sunkShips.size < fleet.length){
     requestNextStrike(); 
